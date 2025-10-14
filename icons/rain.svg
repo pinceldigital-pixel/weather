@@ -1,9 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <ellipse cx="55" cy="52" rx="28" ry="16" fill="#E6EEF3"/>
-  <ellipse cx="40" cy="45" rx="18" ry="14" fill="#D2E1EA"/>
-  <g fill="#7DB7E6">
-    <path d="M40 70 c0 -6 6 -12 6 -12s6 6 6 12a6 6 0 1 1 -12 0z"/>
-    <path d="M54 76 c0 -6 6 -12 6 -12s6 6 6 12a6 6 0 1 1 -12 0z"/>
-    <path d="M68 70 c0 -6 6 -12 6 -12s6 6 6 12a6 6 0 1 1 -12 0z"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><ellipse cx="55" cy="52" rx="28" ry="16" fill="#E6EEF3"/><ellipse cx="40" cy="45" rx="18" ry="14" fill="#D2E1EA"/><g fill="#7DB7E6"><path d="M40 70 c0 -6 6 -12 6 -12s6 6 6 12a6 6 0 1 1 -12 0z"/><path d="M54 76 c0 -6 6 -12 6 -12s6 6 6 12a6 6 0 1 1 -12 0z"/><path d="M68 70 c0 -6 6 -12 6 -12s6 6 6 12a6 6 0 1 1 -12 0z"/></g></svg>

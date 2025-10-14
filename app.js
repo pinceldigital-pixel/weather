@@ -1,7 +1,10 @@
-// App.js con manejo de errores y fallback
+// app.js — sin geolocalización, con timeout y fallback
+// Reemplazá tu app.js por este (no toca tu index.html)
 const API_KEY = "1b8667da28d347c66e6c0ae01033b6f5";
 const UNITS = 'metric';
 const LANG = 'es';
+const LAT = -34.6037;   // Buenos Aires fijo
+const LON = -58.3816;
 
 const $ = (s)=>document.querySelector(s);
 function setText(sel, v){ const el=$(sel); if(el) el.textContent=v; }
@@ -17,9 +20,15 @@ const iconFor = (main, desc='')=>{
   return ICONS.clouds;
 };
 
+function timeout(promise, ms, label='request') {
+  let t; 
+  const to = new Promise((_,rej)=> t=setTimeout(()=>rej(new Error(label+' timeout')), ms));
+  return Promise.race([promise.finally(()=>clearTimeout(t)), to]);
+}
+
 function groupByDay(list){
   const map = new Map();
-  list?.forEach(i=>{
+  (list||[]).forEach(i=>{
     const d = new Date(i.dt*1000);
     const key = d.toISOString().slice(0,10);
     if(!map.has(key)) map.set(key, []);
@@ -43,70 +52,55 @@ function groupByDay(list){
 async function fetchOpenWeather(lat, lon){
   const base = 'https://api.openweathermap.org/data/2.5';
   const qs = `lat=${lat}&lon=${lon}&units=${UNITS}&lang=${LANG}&appid=${API_KEY}`;
-  const [curRes, fcRes, aqiRes] = await Promise.all([
-    fetch(`${base}/weather?${qs}`),
-    fetch(`${base}/forecast?${qs}`),
-    fetch(`${base}/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`)
-  ]);
-  if(!curRes.ok) throw new Error('OpenWeather weather error ' + curRes.status);
-  const current = await curRes.json();
-  const forecast = await fcRes.json();
-  const aqi = await aqiRes.json().catch(()=>({}));
+  const curP = fetch(`${base}/weather?${qs}`).then(r=>r.ok?r.json():Promise.reject(new Error('weather '+r.status)));
+  const fcP  = fetch(`${base}/forecast?${qs}`).then(r=>r.ok?r.json():Promise.reject(new Error('forecast '+r.status)));
+  const aqiP = fetch(`${base}/air_pollution?lat=${lat}&lon=${lon}&appid=${API_KEY}`).then(r=>r.ok?r.json():{}).catch(()=>({}));
+  const [current, forecast, aqi] = await Promise.all([timeout(curP, 5000, 'weather'), timeout(fcP, 5000, 'forecast'), timeout(aqiP, 5000, 'aqi')]);
   return {source:'openweather', current, forecast, aqi};
 }
 
 async function fetchOpenMeteo(lat, lon){
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,relative_humidity_2m,weathercode&forecast_days=4&timezone=auto`;
-  const res = await fetch(url);
-  if(!res.ok) throw new Error('Open-Meteo error ' + res.status);
+  const res = await timeout(fetch(url), 5000, 'open-meteo');
+  if(!res.ok) throw new Error('open-meteo '+res.status);
   const j = await res.json();
   const nowIdx = 0;
   const current = { 
     main: { temp: j.hourly.temperature_2m[nowIdx], temp_min: j.hourly.temperature_2m[nowIdx], temp_max: j.hourly.temperature_2m[nowIdx], humidity: j.hourly.relative_humidity_2m[nowIdx] },
     weather: [{ main: 'Clouds', description: 'nublado' }]
   };
-  const forecast = { list: j.hourly.time.map((t,i)=>({
-    dt: Math.floor(new Date(t).getTime()/1000),
-    main: { temp: j.hourly.temperature_2m[i], temp_min: j.hourly.temperature_2m[i], temp_max: j.hourly.temperature_2m[i] },
-    weather: [{ main:'Clouds', description:'nublado' }]
-  })) };
+  const forecast = { list: j.hourly.time.map((t,i)=>({ dt: Math.floor(new Date(t).getTime()/1000), main: { temp: j.hourly.temperature_2m[i], temp_min: j.hourly.temperature_2m[i], temp_max: j.hourly.temperature_2m[i] }, weather: [{ main:'Clouds', description:'nublado' }] })) };
   const aqi = { list: [{ main: { aqi: 2 } }] };
   return {source:'openmeteo', current, forecast, aqi};
 }
 
-function showError(msg, detail=''){
-  console.error(msg, detail);
-  const bar = document.createElement('div');
-  bar.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:#B91C1C;color:#fff;padding:10px 14px;font-family:system-ui;z-index:9999';
-  bar.textContent = msg + (detail ? ' — ' + detail : '');
-  document.body.appendChild(bar);
+function paintNow(c){ 
+  const temp = Math.round(c.main.temp);
+  const hi = Math.round(c.main.temp_max);
+  const lo = Math.round(c.main.temp_min);
+  const w = c.weather?.[0] || {main:'Clouds', description:'nublado'};
+  setText('#temp-now', `${temp}°`);
+  setText('#high', `H: ${hi}°`);
+  setText('#low', `L: ${lo}°`);
+  const iconEl = document.querySelector('#icon-now');
+  if(iconEl) iconEl.textContent = iconFor(w.main, w.description);
+  setText('#humidity', `${Math.round(c.main.humidity||0)}%`);
 }
 
-function apply({current, forecast, aqi, source}){
+function paintRest(forecast, aqi, source){
   try {
-    const temp = Math.round(current.main.temp);
-    const hi = Math.round(current.main.temp_max);
-    const lo = Math.round(current.main.temp_min);
-    const w = current.weather[0] || {};
-    setText('#temp-now', `${temp}°`);
-    setText('#high', `H: ${hi}°`);
-    setText('#low', `L: ${lo}°`);
-    const iconEl = document.querySelector('#icon-now');
-    if(iconEl) iconEl.textContent = iconFor(w.main, w.description);
-    setText('#humidity', `${Math.round(current.main.humidity)}%`);
-
     let aqiIdx = aqi?.list?.[0]?.main?.aqi || 1; // 1..5
     const desc = ['Good','Fair','Moderate','Poor','Very Poor'][aqiIdx-1] || 'Good';
     setText('#aqi', desc);
     const dot = document.querySelector('#aqi-dot');
     if(dot) dot.style.background = aqiIdx<=2? '#35d27a' : aqiIdx===3? '#f1c40f' : '#e74c3c';
 
-    const next3 = forecast.list.slice(0,3);
+    const next3 = (forecast.list||[]).slice(0,3);
     ['#h1','#h2','#h3'].forEach((id,i)=>{
       const it = next3[i]; if(!it) return;
       const d = new Date(it.dt*1000);
       const el = document.querySelector(id); if(!el) return;
-      el.querySelector('.h-icon').textContent = iconFor(it.weather[0]?.main, it.weather[0]?.description);
+      el.querySelector('.h-icon').textContent = iconFor(it.weather?.[0]?.main, it.weather?.[0]?.description);
       el.querySelector('.h-time').textContent = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       el.querySelector('.h-temp').textContent = `${it.main.temp>0?'+':''}${Math.round(it.main.temp)}°`;
     });
@@ -123,29 +117,23 @@ function apply({current, forecast, aqi, source}){
     });
 
     setText('#stamp', `Actualizado: ${new Date().toLocaleString()} (${source})`);
-  } catch(err) {
-    showError('Error al pintar datos', err.message);
-  }
+  } catch(e) { console.warn('paintRest', e); }
 }
 
 async function bootstrap(){
-  try {
-    const pos = await new Promise((resolve)=>{
-      if(!navigator.geolocation) return resolve(null);
-      navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude, lon:p.coords.longitude}), ()=>resolve(null), {timeout:4000});
-    });
-    const lat = pos?.lat ?? -34.6037;   // BA fallback
-    const lon = pos?.lon ?? -58.3816;
+  setText('#temp-now', '—'); setText('#high','H: —'); setText('#low','L: —'); setText('#stamp','Buscando...');
+  try { 
     let data;
-    try {
-      data = await fetchOpenWeather(lat, lon);
-    } catch(ow){
-      console.warn('Fallo OpenWeather, probando Open-Meteo...', ow);
-      data = await fetchOpenMeteo(lat, lon);
-    }
-    apply(data);
+    try { data = await fetchOpenWeather(LAT, LON); }
+    catch (e) { console.warn('OW fallo → Open-Meteo', e); data = await fetchOpenMeteo(LAT, LON); }
+    paintNow(data.current);
+    paintRest(data.forecast, data.aqi, data.source);
   } catch (e) {
-    showError('No se pudo cargar el clima', e.message);
+    const err = document.createElement('div');
+    err.style.cssText = 'position:fixed;left:0;right:0;bottom:0;background:#B91C1C;color:#fff;padding:10px 14px;font-family:system-ui;z-index:9999';
+    err.textContent = 'No se pudo cargar el clima: ' + e.message;
+    document.body.appendChild(err);
+    setText('#stamp', 'Error');
   }
 }
 
