@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f1115" />
+  <title>Clima PWA</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="now">
+        <div class="temp" id="temp-now">0°</div>
+        <div class="hl"><span id="high">H: --°</span> <span id="low">L: --°</span></div>
+      </div>
+      <div class="icon-large" id="icon-now" aria-label="condición actual">☁️</div>
+    </header>
+
+    <section class="hours" aria-label="Pronóstico por hora">
+      <div class="hour" id="h1"><div class="h-icon">☁️</div><div class="h-time">--:--</div><div class="h-temp">--°</div></div>
+      <div class="hour" id="h2"><div class="h-icon">☁️</div><div class="h-time">--:--</div><div class="h-temp">--°</div></div>
+      <div class="hour" id="h3"><div class="h-icon">☁️</div><div class="h-time">--:--</div><div class="h-temp">--°</div></div>
+    </section>
+
+    <section class="cards">
+      <div class="card">
+        <div class="row"><span>Air Quality Index:</span><strong id="aqi">—</strong><span class="dot" id="aqi-dot"></span></div>
+        <div class="row"><span>Humedad:</span><strong id="humidity">—%</strong><span class="drop">💧</span></div>
+      </div>
+    </section>
+
+    <section class="days" aria-label="Pronóstico extendido">
+      <div class="day" id="d1"><div class="d-name">Hoy</div><div class="d-icon">☁️</div><div class="d-temp"><span class="max">--°</span><span class="min">--°</span></div></div>
+      <div class="day" id="d2"><div class="d-name">Mar</div><div class="d-icon">☁️</div><div class="d-temp"><span class="max">--°</span><span class="min">--°</span></div></div>
+      <div class="day" id="d3"><div class="d-name">Mié</div><div class="d-icon">☁️</div><div class="d-temp"><span class="max">--°</span><span class="min">--°</span></div></div>
+      <div class="day" id="d4"><div class="d-name">Jue</div><div class="d-icon">⛈️</div><div class="d-temp"><span class="max">--°</span><span class="min">--°</span></div></div>
+    </section>
+
+    <footer class="foot">
+      <button id="refresh">Actualizar</button>
+      <span class="stamp" id="stamp">—</span>
+    </footer>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js'));
+    }
+  </script>
+</body>
+</html>
