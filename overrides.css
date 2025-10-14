@@ -1,0 +1,8 @@
+
+/* Fondo gris oscuro total */
+html, body { background: #111111 !important; }
+.app, .top, .hours .hour, .cards .card, .days, .day, .foot { 
+  background: #121212 !important; 
+  color: #eaeaea !important;
+}
+.top { color: #111 !important; } /* texto oscuro dentro de top celeste */

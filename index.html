@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111111" />
+  <title>Clima PWA</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+  <link rel="stylesheet" href="./overrides.css" />
+  <style>
+    /* estilos mínimos por si no hay framework */
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;color:#eaeaea;background:#111111}
+    .app{max-width:420px;margin:24px auto;padding:16px;background:#121212;border-radius:24px;border:1px solid #1f1f1f}
+    .top{display:flex;justify-content:space-between;align-items:center;background:#2a2f35;color:#111;padding:18px;border-radius:18px}
+    .temp{font-size:56px;font-weight:800;color:#111}
+    .hl{opacity:.8;margin-top:4px;color:#111}
+    .icon-large{font-size:60px}
+    .hours{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+    .hour{background:#1e2329;border-radius:12px;padding:12px;text-align:center}
+    .hour .h-icon{font-size:22px;margin-bottom:6px}
+    .hour .h-time{opacity:.8;font-size:14px}
+    .cards .card{background:#1a1f25;border-radius:14px;padding:12px;margin:8px 0}
+    .row{display:flex;align-items:center;justify-content:space-between;margin:6px 0}
+    .dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-left:8px;background:#777}
+    .days{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;background:#151a1f;border-radius:16px;padding:10px}
+    .day{background:#10151a;border-radius:12px;padding:10px;text-align:center}
+    .day .d-name{font-weight:700;margin-bottom:6px}
+    .day .d-temp{display:flex;flex-direction:column;font-size:14px;opacity:.9}
+    .foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:#adb3ba}
+    button#refresh{background:#222a33;border:0;color:#e8eef5;padding:10px 14px;border-radius:12px;cursor:pointer}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div>
+        <div class="temp" id="temp-now">...°</div>
+        <div class="hl"><span id="high">H: —°</span> <span id="low">L: —°</span></div>
+      </div>
+      <div class="icon-large" id="icon-now" aria-label="condición actual">☁️</div>
+    </header>
+
+    <section class="hours" aria-label="Pronóstico por hora">
+      <div class="hour" id="h1"><div class="h-icon">☁️</div><div class="h-time">--:--</div><div class="h-temp">—°</div></div>
+      <div class="hour" id="h2"><div class="h-icon">☁️</div><div class="h-time">--:--</div><div class="h-temp">—°</div></div>
+      <div class="hour" id="h3"><div class="h-icon">☁️</div><div class="h-time">--:--</div><div class="h-temp">—°</div></div>
+    </section>
+
+    <section class="cards">
+      <div class="card">
+        <div class="row"><span>Air Quality Index:</span><strong id="aqi">—</strong><span class="dot" id="aqi-dot"></span></div>
+        <div class="row"><span>Humedad:</span><strong id="humidity">—%</strong><span class="drop">💧</span></div>
+      </div>
+    </section>
+
+    <section class="days" aria-label="Pronóstico extendido">
+      <div class="day" id="d1"><div class="d-name">Hoy</div><div class="d-icon">☁️</div><div class="d-temp"><span class="max">—°</span><span class="min">—°</span></div></div>
+      <div class="day" id="d2"><div class="d-name">—</div><div class="d-icon">☁️</div><div class="d-temp"><span class="max">—°</span><span class="min">—°</span></div></div>
+      <div class="day" id="d3"><div class="d-name">—</div><div class="d-icon">☁️</div><div class="d-temp"><span class="max">—°</span><span class="min">—°</span></div></div>
+      <div class="day" id="d4"><div class="d-name">—</div><div class="d-icon">☁️</div><div class="d-temp"><span class="max">—°</span><span class="min">—°</span></div></div>
+    </section>
+
+    <footer class="foot">
+      <button id="refresh">Actualizar</button>
+      <span class="stamp" id="stamp">Buscando...</span>
+    </footer>
+  </main>
+
+  <script src="./app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+    }
+  </script>
+</body>
+</html>
