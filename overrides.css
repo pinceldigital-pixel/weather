@@ -1,0 +1,10 @@
+
+/* Drop-in dark theme */
+html, body { background: #111111 !important; }
+.app, .top, .hours .hour, .cards .card, .days, .day, .foot { 
+  background: #121212 !important; 
+  color: #eaeaea !important;
+}
+/* Optional: neutralize panel tints */
+.top { color: #eaeaea !important; }
+a, button { color: #eaeaea; }
