@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Clima Card</title>
+  <meta name="theme-color" content="#0ea5e9">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="wrap">
+    <header class="top">
+      <div class="grow"></div>
+      <button id="searchBtn" type="button" class="icon" title="Buscar ciudad"><img src="assets/icons/search.svg" width="18" height="18" alt="Buscar" class="btn-ico"></button>
+      <button id="refreshBtn" type="button" class="icon" title="Actualizar">↻</button>
+    </header>
+
+    <section id="card" class="card">
+      <div class="city" id="city">—</div>
+      <div class="date" id="date">—</div>
+      <div class="temp" id="temp">--°</div>
+      <div class="desc" id="desc">—</div>
+
+      <div class="details">
+        <div><small>Amanecer</small><span id="sunrise">—</span></div>
+        <div><small>Viento</small><span id="wind">—</span></div>
+        <div><small>Máx/Mín</small><span id="range">—</span></div>
+      </div>
+    </section>
+
+    <section class="forecast">
+      <h3>Próximos 7 días</h3>
+      <div id="forecastGrid" class="grid"></div>
+    </section>
+
+    <section id="offline" class="offline hidden">
+      Estás sin conexión. Mostrando datos guardados si hay.
+    </section>
+
+    <footer class="foot">
+      <small>Hecho con ♥ · PWA</small>
+    </footer>
+  </main>
+
+  <dialog id="searchDlg">
+    <form method="dialog" class="dlg">
+      <input id="searchInput" type="search" placeholder="Ej: Buenos Aires" autocomplete="off">
+      <menu>
+        <button value="cancel" class="ghost">Cancelar</button>
+        <button id="goSearch" value="ok">Buscar</button>
+      </menu>
+    </form>
+  </dialog>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

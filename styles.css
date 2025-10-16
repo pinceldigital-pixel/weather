@@ -1,0 +1,58 @@
+:root{
+  --bg:#0b1020; --text:#eef6ff; --muted:#d2e8ff; --shadow:rgba(0,0,0,.25);
+  --tile:#10223a; --tile-b:#1e3a5f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);
+  font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial}
+.wrap{max-width:520px;margin:0 auto;padding:16px;min-height:100dvh;display:flex;flex-direction:column}
+.top{display:flex;align-items:center;gap:8px}
+.icon{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--text);padding:8px 9px;border-radius:10px;cursor:pointer}
+.icon:active{transform:scale(.98)}
+.grow{flex:1}
+
+.card{position:relative; margin:12px 0; padding:28px 24px; border-radius:22px; color:white;
+  box-shadow: 0 20px 50px var(--shadow); overflow:hidden; min-height: 58vh; display:flex; flex-direction:column; align-items:flex-start;
+  transition:background-color 0.8s ease;}
+.card .city{letter-spacing:.5px; font-weight:700; opacity:.95}
+.card .date{opacity:.9; margin-top:2px}
+.card .temp{font-size: 8.5rem; font-weight:800; line-height: .9; margin-top: 8px}
+.card .desc{font-size:1.1rem; opacity:.95; margin-top: -8px}
+.details{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:auto;width:100%}
+.details small{display:block;opacity:.9}
+.details span{font-weight:700}
+
+.forecast{margin-top:14px}
+.forecast h3{margin:0 0 10px; font-size:1rem; opacity:.9}
+.grid{display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px}
+@media (min-width: 480px){ .grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (min-width: 640px){ .grid{ grid-template-columns: repeat(4, minmax(0,1fr)); } }
+.day{background: var(--tile); border:1px solid var(--tile-b); border-radius:16px; padding:12px; display:flex; flex-direction:column; align-items:center; gap:6px;
+  transition: transform .2s ease, background .3s ease; }
+.day:hover{ transform: translateY(-2px); background: #132a45; }
+.day .d{font-weight:700; font-size:.95rem; text-align:center}
+.day .ico{width:52px; height:52px}
+.day .t{font-weight:700}
+.day .s{opacity:.9; font-size:.9rem}
+
+.offline{margin:10px 0; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.2)}
+.hidden{display:none}
+.foot{margin-top:auto; text-align:center; opacity:.7}
+dialog{border:none; border-radius:16px; padding:0; background:#182235; color:var(--text)}
+.dlg{padding:16px}
+.dlg input{width:100%; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.2); background:transparent; color:var(--text)}
+menu{display:flex; justify-content:flex-end; gap:10px; margin: 12px 0 0; padding:0}
+button.ghost{background:transparent;border:1px solid rgba(255,255,255,.2);color:var(--text);padding:8px 12px;border-radius:10px}
+dialog button{background:#0ea5e9;border:none;color:#fff;padding:8px 12px;border-radius:10px}
+
+/* Animaciones sutiles para íconos */
+.sun { animation: spin 20s linear infinite; transform-origin: 50% 50%; }
+.cloud { animation: float 6s ease-in-out infinite alternate; }
+.rain { animation: drip 1.2s ease-in-out infinite; }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+@keyframes float { from{transform:translateY(0)} to{transform:translateY(-3px)} }
+@keyframes drip { 0%,100%{transform:translateY(0)} 50%{transform:translateY(2px)} }
+
+.icon img{display:block;}
+
+.btn-ico{display:block;pointer-events:none}
